@@ -23,56 +23,73 @@ def load_recipe_hashmap():
 # Load the recipes from the hash map
 recipe_map = load_recipe_hashmap()
 
+PREDEFINED_TAGS = {
+    "vegan", "vegetarian", "gluten-free", "low-carb", "high-protein", "dairy-free",
+    "nut-free", "low-fat", "italian", "mexican", "indian", "chinese", "mediterranean",
+    "american", "thai", "japanese", "breakfast", "lunch", "dinner", "snack", "dessert", 
+    "grilled", "baked", "fried", "roasted", "slow-cooked", "raw", "spicy", "sweet", "savory", 
+    "sour", "salty"
+}
+
 @app.route('/search', methods=['POST'])
 def search_recipes():
-    """
-    Search recipes by ingredients and other optional filters.
-    Request JSON format: { "ingredients": ["ingredient1", "ingredient2", ...], "max_minutes": 45, "min_steps": 3 }
-    """
     data = request.get_json()
 
-    # Check if ingredients field is present
     if not data or 'ingredients' not in data:
         return jsonify({"error": "Ingredients are required"}), 400
 
-    # Normalize user-provided ingredients
     user_ingredients = set(ing.lower().strip() for ing in data.get('ingredients', [])[:MAX_INGREDIENTS])
 
-    # If no ingredients are provided, return an error
     if not user_ingredients:
         return jsonify({"error": "No ingredients provided"}), 400
 
-    # Extract filter criteria from the request data
-    max_minutes = data.get('max_minutes', float('inf'))  # Default to infinity (no limit)
-    min_steps = data.get('min_steps', 0)  # Default to 0 (no minimum)
-    max_steps = data.get('max_steps', float('inf'))  # Default to infinity (no limit)
+    # Get tags filter, if provided, and ensure they match predefined tags
+    user_tags = set(tag.lower().strip() for tag in data.get('tags', []))
+    
+    # Check if any provided tags are invalid
+    invalid_tags = user_tags - PREDEFINED_TAGS
+    if invalid_tags:
+        return jsonify({"error": f"Invalid tags provided: {', '.join(invalid_tags)}"}), 400
 
-    # Filter recipes by matching ingredients and the filter criteria
+    sort_by = data.get('sort_by', 'matched_ingredients')
     matching_recipes = []
+
     for recipe_id, recipe_data in recipe_map.items():
-        recipe_ingredients = set(ing.strip().lower() for ing in recipe_data['ingredients'])
-        matched = user_ingredients.intersection(recipe_ingredients)
+        recipe_ingredients = set(ing.strip().lower() for ing in recipe_data.get('ingredients', []))
+        matched_ingredients = user_ingredients.intersection(recipe_ingredients)
 
-        # Apply the additional filters
-        if matched:
-            if (recipe_data['total_time'] <= max_minutes and
-                recipe_data['num_steps'] >= min_steps and
-                recipe_data['num_steps'] <= max_steps):
-                matching_recipes.append({
-                    "name": recipe_data['name'],
-                    "description": recipe_data['description'],
-                    "minutes": recipe_data['total_time'],
-                    "matched_ingredients": list(matched),
-                    "missing_ingredients": list(recipe_ingredients - matched),
-                    "n_steps": recipe_data['num_steps'],
-                    "tags": recipe_data['tags'],
-                })
+        # Check if recipe matches tags
+        matched_tags = user_tags.intersection(set(recipe_data.get('tags', [])))
 
-    # Sort recipes by the number of matched ingredients
-    matching_recipes.sort(key=lambda x: len(x["matched_ingredients"]), reverse=True)
+        # Skip recipes with total_time of 0
+        if recipe_data['total_time'] == 0:
+            continue
 
-    # Limit the number of recipes returned
+        if matched_ingredients and (not user_tags or matched_tags):  # If any tags match
+            matching_recipes.append({
+                "name": recipe_data['name'],
+                "description": recipe_data.get('description', 'Description not available'),
+                "minutes": recipe_data['total_time'],
+                "matched_ingredients": list(matched_ingredients),
+                "missing_ingredients": list(recipe_ingredients - matched_ingredients),
+                "n_steps": recipe_data['num_steps'],
+                "tags": recipe_data['tags'],
+                "instructions": recipe_data['instructions'],  # Make sure instructions are included
+            })
+
+    if sort_by == "matched_ingredients":
+        matching_recipes.sort(key=lambda x: len(x["matched_ingredients"]), reverse=True)
+    elif sort_by == "missing_ingredients":
+        matching_recipes.sort(key=lambda x: len(x["missing_ingredients"]))
+    elif sort_by == "total_time":
+        matching_recipes.sort(key=lambda x: x["minutes"])
+    elif sort_by == "num_steps":
+        matching_recipes.sort(key=lambda x: x["n_steps"])
+
     matching_recipes = matching_recipes[:MAX_RESULTS]
+
+    if not matching_recipes:
+        return jsonify({"message": "No recipes found for the given ingredients."}), 404
 
     return jsonify({
         "total_matches": len(matching_recipes),
@@ -95,14 +112,17 @@ def get_recipe_details(recipe_name):
     if not recipe:
         return jsonify({"error": "Recipe not found"}), 404
 
-    # Return detailed information about the recipe with name before description
+    # If description is null or empty, set to "Description not available"
+    description = recipe.get('description', 'Description not available')
+
+    # Return detailed information about the recipe
     return jsonify({
         "name": recipe['name'],  # Name first
-        "description": recipe['description'],  # Description second
+        "description": description,  # Description second
         "minutes": recipe['total_time'],
         "tags": recipe['tags'],
         "n_steps": recipe['num_steps'],
-        "steps": recipe['instructions'],
+        "steps": recipe.get('instructions', []),  # Include instructions
         "ingredients": recipe['ingredients'],
         "n_ingredients": recipe['num_ingredients']
     })
