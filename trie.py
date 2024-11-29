@@ -57,7 +57,13 @@ recipe_trie = Trie()
 for recipe in recipes:
     recipe_name = recipe['name']
     ingredients = recipe['ingredients']
-    recipe_details = {'id': recipe['id'],'minutes': recipe['minutes'],'submitted': recipe['submitted'],
-                      'tags': recipe['tags'],'nutrition': recipe['nutrition'],
-                      'n_steps': recipe['n_steps'],'steps': recipe['steps'],'description': recipe['description'],'n_ingredients': recipe['n_ingredients']}
+    recipe_details = {'id': recipe['id'],
+                      'minutes': recipe['minutes'],
+                      'submitted': recipe['submitted'],
+                       'contributor_id': recipe['contributor_id'],
+                      'tags': recipe['tags'],
+                      'nutrition': recipe['nutrition'],
+                      'n_steps': recipe['n_steps'],
+                      'steps': recipe['steps'],'description': recipe['description'],
+                      'n_ingredients': recipe['n_ingredients']}
     recipe_trie.insert(recipe_name, ingredients, recipe_details)
