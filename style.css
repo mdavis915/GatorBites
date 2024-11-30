@@ -1,0 +1,57 @@
+body {
+  height: 100%;
+  margin: 0;
+  font-size: 17px;
+  font-family: helveticaneue-light;
+  background-color: tomato;
+}
+
+h3 {
+  font-weight: bold;
+  height: 100%;
+  margin-bottom: 25px;
+  font-size: 30px;
+  text-align: center;
+  font-family: helveticaneue-light;
+}
+
+.container {
+  display: flex;
+  justify-content: center;
+  margin-top: 125px;
+}
+
+/* Styles grey box */
+.search-container {
+  font-family: helveticaneue-light;
+  height: 50%;
+  width: 50%;
+  border-radius: 50px;
+  background-color: #f2f2f2;
+  padding: 150px;
+  text-align: center;
+}
+
+/* Style Textbox */
+input[type=text] {
+  padding: 6px;
+  margin-top: 8px;
+  margin-left: 10px;
+  font-size: 17px;
+}
+
+/* Style Submit Button */
+button {
+  padding: 6px;
+  margin-top: 8px;
+  margin-right: 16px;
+  background: #ddd;
+  font-size: 17px;
+  border: none;
+  cursor: pointer;
+}
+
+/* Style Background */
+.search-container button:hover {
+  background: #ccc;
+}
