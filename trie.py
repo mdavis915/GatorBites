@@ -1,3 +1,8 @@
+import pandas as pd
+from flask import Flask
+from flask import request
+from flask import jsonify
+
 class recipe_nodes:
     def __init__(self):
         self.children = {}
@@ -67,3 +72,23 @@ for recipe in recipes:
                       'steps': recipe['steps'],'description': recipe['description'],
                       'n_ingredients': recipe['n_ingredients']}
     recipe_trie.insert(recipe_name, ingredients, recipe_details)
+    
+app = FLASK(__name__)
+@app.route('/search_trie', methods=['POST'])
+def recipe_finder:
+  recipe_search = request.get_json()
+  ingredients = recipe_search.get('ingredients',[])
+  restrictions = recipe_search.get('restrictions',None)
+  recipes_found = recipe_trie.search_ingredients(ingredients,restrictions)
+  
+  return jsonify(recipes_found)
+
+  
+  @app.route('/recipe_info/<recipe_name>', methods=['GET'])
+  def recipe_information(recipe_name):
+    ingredient_info = recipe_trie.stored_ingredient.get(recipe_name, {})
+    info = ingredient_data.get('details', {})
+    return jsonify(info)
+
+if __name__ == "__main__":
+  app.run(debug=True)
