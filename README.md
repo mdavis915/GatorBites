@@ -4,7 +4,7 @@ GatorBites is a React-based web application that allows users to search for reci
 
 ## Setup Instructions
 
-### Prerequisites
+## Prerequisites
 - Node.js
 - Python
 - Git
@@ -15,7 +15,7 @@ git clone https://github.com/mdavis915/GatorBites.git
 cd GatorBites
 ```
 
-## 2. Set Up the Backend
+### 2. Set Up the Backend
 - Navigate to the `backend` directory:
   
   ```bash
@@ -32,7 +32,9 @@ cd GatorBites
   ```bash
   http://127.0.0.1:5000
 
-## 3. Set Up the Frontend
+- Download the `RAW_recipes.csv` from the Report and ensure it is uploaded into the backend directory
+  
+### 3. Set Up the Frontend
 - Open a new terminal and ensure you're in the **GatorBites** root directory
 - Navigate to the `frontend` directory
   
@@ -50,17 +52,17 @@ cd GatorBites
   http://localhost:3000
   ```
   
-## 4. Using the Application
+### 4. Using the Application
 - After starting the backend server with `python main.py` and the frontend with         `npm start`, open your brower and navigate to `http://localhost:3000` if not loaded automatically.
     
-## 5. Interacting with the App
+### 5. Interacting with the App
 - Once the frontend is loaded, you can search for recipes by entering ingredients         in the search bar and filtering using tags. Users also have the opportunity to 
         select between a Trie or Hashmap to perform all operations and sort the order 
         in how the found recipes are displayed.
 - You can view more detailed information about a recipe, such as instructions and 
         descriptions, by selecting a recipe from the recipe list.
 
-## 6. Stopping the Servers
+### 6. Stopping the Servers
 -  To stop the backend server, press `Ctrl + C` in the terminal where you started it.
 -  To stop the frontend server, press `Ctrl + C` in the terminal where you ran npm 
      start.
