@@ -189,32 +189,56 @@ class HashMap:
     def __init__(self, size=1000):
         self.size = size
         self.table = [[] for _ in range(size)]
+        self.count = 0  # Track the number of elements for efficient resizing
 
     def hash_function(self, key):
-        return sum(ord(char) for char in str(key)) % self.size
+        hash_value = 0
+        prime = 101 
+        for char in str(key):
+            hash_value = (hash_value * prime + ord(char)) & 0x7FFFFFFF  # Limit to 32 bits
+        return hash_value % self.size
+
+    def binary_search(self, bucket, key):
+        low, high = 0, len(bucket) - 1
+        while low <= high:
+            mid = (low + high) // 2
+            if bucket[mid][0] == key:
+                return mid  
+            elif bucket[mid][0] < key:
+                low = mid + 1
+            else:
+                high = mid - 1
+        return low  # Position to insert if key not found
 
     def insert(self, key, value):
         index = self.hash_function(key)
-        for pair in self.table[index]:
-            if pair[0] == key:
-                pair[1] = value  
-                return
-        self.table[index].append([key, value])  
+        bucket = self.table[index]
+        pos = self.binary_search(bucket, key)
+        if pos < len(bucket) and bucket[pos][0] == key:
+            bucket[pos][1] = value  # Update value if key exists
+        else:
+            bucket.insert(pos, [key, value])  # Insert at the correct position
+            self.count += 1
+            if self.count / self.size > 0.7:  # Resize if load factor > 0.7
+                self.resize()
 
     def get(self, key):
         index = self.hash_function(key)
-        for pair in self.table[index]:
-            if pair[0] == key:
-                return pair[1]
-        return None  
+        bucket = self.table[index]
+        pos = self.binary_search(bucket, key)
+        if pos < len(bucket) and bucket[pos][0] == key:
+            return bucket[pos][1]
+        return None  # Key not found
 
     def delete(self, key):
         index = self.hash_function(key)
-        for i, pair in enumerate(self.table[index]):
-            if pair[0] == key:
-                del self.table[index][i]
-                return True 
-        return False 
+        bucket = self.table[index]
+        pos = self.binary_search(bucket, key)
+        if pos < len(bucket) and bucket[pos][0] == key:
+            del bucket[pos]
+            self.count -= 1
+            return True
+        return False  # Key not found
 
     def get_all_items(self):
         items = []
@@ -222,6 +246,19 @@ class HashMap:
             for pair in bucket:
                 items.append(pair)
         return items
+
+    def resize(self):
+        old_table = self.table
+        self.size *= 2
+        self.table = [[] for _ in range(self.size)]
+        for bucket in old_table:
+            for key, value in bucket:
+                index = self.hash_function(key)
+                self.table[index].append([key, value])  
+
+    def bulk_insert(self, items):
+        for key, value in items:
+            self.insert(key, value)
 
 def format_title(title):
     return ' '.join(word.capitalize() for word in title.split())
