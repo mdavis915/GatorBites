@@ -63,8 +63,7 @@ cd GatorBites
         descriptions, by selecting a recipe from the recipe list.
 
 ### 6. Stopping the Servers
--  To stop the backend server, press `Ctrl + C` in the terminal where you started it.
--  To stop the frontend server, press `Ctrl + C` in the terminal where you ran npm 
-     start.
+-  To stop the backend server, press `Ctrl + C` in the terminal where you started it
+-  To stop the frontend server, press `Ctrl + C` in the terminal where you ran `npm start`
 
    
