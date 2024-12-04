@@ -1,5 +1,5 @@
 # GatorBites
-GatorBites is a React-based web application that allows users to search for recipes based on ingredients and tags. The app dynamically filters recipes and displays detailed information, including matching and missing ingredients, estimated cooking time, and relevant tags. The user then has the opportunity to select on these recipes and view more information regarding the recipe, such as its descriptions and instructions. The project utilizes two data structures to achieve the project's task: a hashmap and a trie. 
+GatorBites is a React-based web application that allows users to search for recipes based on ingredients and tags using information from a comprehensive recipe dataset. The app dynamically filters recipes and displays detailed information, including matching and missing ingredients, estimated cooking time, and relevant tags. The user then has the opportunity to select on these recipes and view more information regarding the recipe, such as its descriptions and instructions. The project utilizes two data structures to achieve the project's task: a hashmap and a trie. 
 
 
 ## Setup Instructions
