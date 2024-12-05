@@ -32,7 +32,7 @@ const RecipeCard = ({ recipe, onClick, selectedTags = [] }) => {
             onClick={() => onClick(recipe.name)}
             style={{
                 width: '350px', 
-                height: '400px', 
+                height: '420px', 
                 border: '1px solid #1400c4',
                 borderRadius: '12px',
                 padding: '15px',
@@ -63,6 +63,9 @@ const RecipeCard = ({ recipe, onClick, selectedTags = [] }) => {
                     </p>
                     <p>
                         <strong>Total Time:</strong> {formatTime(recipe.minutes || 0)}
+                    </p>
+                    <p>
+                        <strong>Number of Steps:</strong> {recipe.n_steps || 'N/A'}
                     </p>
                 </div>
             </div>
