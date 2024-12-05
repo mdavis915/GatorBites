@@ -28,6 +28,7 @@ cd GatorBites
   
   ```bash
   python main.py
+  ```
   By default, the backend will be accessible at:
   ```bash
   http://127.0.0.1:5000
